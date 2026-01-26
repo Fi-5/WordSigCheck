@@ -59,7 +59,7 @@
 			"type": "func",
 			"dependsOn": "build (functions)",
 			"options": {
-				"cwd": "${workspaceFolder}/bin/Debug/net48-windows-windows-windows"
+				"cwd": "${workspaceFolder}/bin/Debug/net48/win-x64"
 			},
 			"command": "host start",
 			"isBackground": true,

@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VerifyOoxml", "VerifyOoxml.csproj", "{C8F6E149-D15E-E9C9-9FB9-97F5D1C6DA5D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C8F6E149-D15E-E9C9-9FB9-97F5D1C6DA5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8F6E149-D15E-E9C9-9FB9-97F5D1C6DA5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8F6E149-D15E-E9C9-9FB9-97F5D1C6DA5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8F6E149-D15E-E9C9-9FB9-97F5D1C6DA5D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {798E207C-5641-48EB-9664-121213590F9C}
+	EndGlobalSection
+EndGlobal

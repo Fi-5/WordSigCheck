@@ -1,5 +1,5 @@
 {
-    "azureFunctions.deploySubpath": "bin/Release/net48-windows/publish",
+    "azureFunctions.deploySubpath": "bin/Release/net48/win-x64/publish",
     "azureFunctions.projectLanguage": "C#",
     "azureFunctions.projectRuntime": "~4",
     "debug.internalConsoleOptions": "neverOpen",

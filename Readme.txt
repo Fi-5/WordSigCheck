@@ -19,7 +19,7 @@ If you fork, redistribute, or publish modified versions of this software, you mu
 - Keep the `LICENSE` file
 - Keep this attribution section (or an equivalent notice) in your distribution
 
-Required Notice: Copyright (c) 2026 Marek Suk
+Required Notice: Copyright (c) 2026 Marek Suk, https://github.com/Fi-5
 
 ## What’s allowed / not allowed (high level)
 Allowed:

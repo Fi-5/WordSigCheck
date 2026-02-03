@@ -401,6 +401,26 @@ public class VerifyOoxmlSignatures
         return sb.ToString();
     }
 
+    [Function("KeepAlive")]
+    public async Task<HttpResponseData> KeepAlive(
+        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "keepalive")] HttpRequestData req)
+    {
+        try
+        {
+            var res = req.CreateResponse(HttpStatusCode.OK);
+            res.Headers.Add("Content-Type", "application/json; charset=utf-8");
+            await res.WriteStringAsync(JsonSerializer.Serialize(new { status = "Alive" }));
+            return res;
+        }
+        catch (Exception ex)
+        {
+            _log.LogError(ex, "KeepAlive failed");
+            var res = req.CreateResponse(HttpStatusCode.InternalServerError);
+            await res.WriteStringAsync("KeepAlive failed");
+            return res;
+        }
+    }
+
     private static async Task<HttpResponseData> Bad(HttpRequestData req, string msg)
     {
         var res = req.CreateResponse(HttpStatusCode.BadRequest);

@@ -4,11 +4,13 @@ using System.IO;
 using System.IO.Packaging;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Threading;
 using System.Xml.Linq;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
@@ -17,10 +19,32 @@ using Microsoft.Extensions.Logging;
 public class VerifyOoxmlSignatures
 {
     private readonly ILogger<VerifyOoxmlSignatures> _log;
+    private readonly Timer? _keepAliveTimer;
 
     public VerifyOoxmlSignatures(ILogger<VerifyOoxmlSignatures> log)
     {
         _log = log;
+
+        // Start a background timer to ping the KeepAlive endpoint every 10 minutes.
+        // Using a process-local Timer avoids adding a Timer extension package.
+        try
+        {
+            _keepAliveTimer = new Timer(async _ =>
+            {
+                try
+                {
+                    await PingKeepAliveAsync();
+                }
+                catch (Exception ex)
+                {
+                    _log.LogWarning(ex, "KeepAlive timer ping failed");
+                }
+            }, null, TimeSpan.Zero, TimeSpan.FromMinutes(10));
+        }
+        catch (Exception ex)
+        {
+            _log.LogWarning(ex, "Failed to start KeepAlive timer");
+        }
     }
 
     [Function("VerifyOoxmlSignatures")]
@@ -399,6 +423,45 @@ public class VerifyOoxmlSignatures
         }
 
         return sb.ToString();
+    }
+
+    // Keepalive HTTP endpoint — responds 200 OK. Use AuthorizationLevel.Anonymous so external pings can call it.
+    private static readonly HttpClient _http = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+
+    [Function("KeepAlive")]
+    public async Task<HttpResponseData> KeepAlive(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "keepalive")] HttpRequestData req)
+    {
+        var res = req.CreateResponse(HttpStatusCode.OK);
+        res.Headers.Add("Content-Type", "text/plain; charset=utf-8");
+        await res.WriteStringAsync("OK");
+        _log.LogInformation("KeepAlive endpoint was called.");
+        return res;
+    }
+
+    private async Task PingKeepAliveAsync()
+    {
+        try
+        {
+            string? host = Environment.GetEnvironmentVariable("WEBSITE_HOSTNAME");
+            string url;
+            if (!string.IsNullOrWhiteSpace(host))
+                url = $"https://{host}/api/keepalive";
+            else
+                url = "http://localhost:7071/api/keepalive";
+
+            _log.LogInformation("PingKeepAlive pinging {url}", url);
+
+            using var req = new HttpRequestMessage(HttpMethod.Get, url);
+            req.Headers.Add("User-Agent", "VerifyOoxmlKeepAlive/1.0");
+
+            var resp = await _http.SendAsync(req);
+            _log.LogInformation("PingKeepAlive result: {status}", resp.StatusCode);
+        }
+        catch (Exception ex)
+        {
+            _log.LogWarning(ex, "PingKeepAlive failed to call keepalive endpoint");
+        }
     }
 
     private static async Task<HttpResponseData> Bad(HttpRequestData req, string msg)
